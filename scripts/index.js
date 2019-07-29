@@ -1,3 +1,3 @@
 $(document).ready(function(){
-	console.log('first script');
+    console.log('first script');
 });
