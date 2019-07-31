@@ -36,7 +36,7 @@ $(document).ready(function(){
             .text('Doping in Professional Bicycle Racing');
 
         // xAxis
-        x.domain([d3.min(data, element => { element.Year - 1 }), d3.max(data, element => { element.Year + 1 }) ]);
+        x.domain([d3.min(data, element => element.Year - 1), d3.max(data, element => element.Year + 1) ]);
         svg.append('g')
             .attr('class', 'x axis')
             .attr('id', 'x-axis')
@@ -44,11 +44,21 @@ $(document).ready(function(){
             .call(xAxis);
 
         // yAxis
-        y.domain(d3.extent(data, element => { element.Time }));
+        y.domain(d3.extent(data, element => element.Time));
         svg.append('g')
             .attr('class', 'y axis')
             .attr('id', 'y-axis')
             .call(yAxis);
 
+        // Dots
+        svg.selectAll('.dot')
+            .data(data)
+            .enter().append('circle')
+            .attr('class', 'dot')
+            .attr('cx', element => x(element.Year))
+            .attr('cy', element => y(element.Time))
+            .attr('r', 5)
+            .attr('data-xvalue', element => element.Year)
+            .attr('data-yvalue', element => element.Time.toISOString);
     });
 });
