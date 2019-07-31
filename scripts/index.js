@@ -4,17 +4,27 @@ $(document).ready(function(){
         width = 920 - margin.left - margin.right,
         height = 630 - margin.top - margin.bottom;
 
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleTime().range([0, height]);
+
+    var xAxis = d3.axisBottom(x);
+    var yAxis = d3.axisLeft(y);
+
     var svg = d3.select('.scatterplotGraph')
                 .append('svg')
                 .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom);
+                .attr('height', height + margin.top + margin.bottom)
+                .append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')' );
+
+    var parsedTime;
 
     d3.json(url).then(function(data) {
         // if (error) throw error;
 
         data.forEach(element => {
             element.Place = +element.Place;
-            var parsedTime = element.Time.split(':');
+            parsedTime = element.Time.split(':');
             element.Time = new Date(1970, 0, 1, 0, parsedTime[0], parsedTime[1]);
         });
 
@@ -25,13 +35,20 @@ $(document).ready(function(){
             .attr('y', margin.top / 2)
             .text('Doping in Professional Bicycle Racing');
 
+        // xAxis
+        x.domain([d3.min(data, element => { element.Year - 1 }), d3.max(data, element => { element.Year + 1 }) ]);
         svg.append('g')
             .attr('class', 'x axis')
-            .attr('id', 'x-axis');
+            .attr('id', 'x-axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(xAxis);
 
+        // yAxis
+        y.domain(d3.extent(data, element => { element.Time }));
         svg.append('g')
             .attr('class', 'y axis')
-            .attr('id', 'y-axis');
+            .attr('id', 'y-axis')
+            .call(yAxis);
 
     });
 });
