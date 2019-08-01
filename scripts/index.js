@@ -7,6 +7,7 @@ $(document).ready(function(){
     var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleTime().range([0, height]);
 
+    var color = d3.scaleOrdinal(d3.schemeSet1);
     var timeFormat = d3.timeFormat('%M:%S');
     var xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
     var yAxis = d3.axisLeft(y).tickFormat(timeFormat);
@@ -60,6 +61,30 @@ $(document).ready(function(){
             .attr('cy', element => y(element.Time))
             .attr('r', 5)
             .attr('data-xvalue', element => element.Year)
-            .attr('data-yvalue', element => element.Time.toISOString);
+            .attr('data-yvalue', element => element.Time.toISOString)
+            .style('fill', element => color(element.Doping != ''));
+
+        // Legend
+        var legend = svg.selectAll('.legend')
+                        .data(color.domain())
+                        .enter().append('g')
+                        .attr('class', 'legend')
+                        .attr('id', 'legend')
+                        .attr('transform', (d, i) => 'translate(0,' + (height/2 - i * 20) + ')');
+
+        legend.append('rect')
+              .attr('x', width - 18)
+              .attr('width', 18)
+              .attr('height', 18)
+              .style('fill', color);
+
+        legend.append('text')
+              .attr('x', width - 24)
+              .attr('y', 9)
+              .attr('dy', '.35em')
+              .style('text-anchor', 'end')
+              .text(element => element ? 'Riders with doping allegations'
+                                        : 'No doping allegations');
+
     });
 });
