@@ -8,7 +8,7 @@ $(document).ready(function(){
     var y = d3.scaleTime().range([0, height]);
 
     var timeFormat = d3.timeFormat('%M:%S');
-    var xAxis = d3.axisBottom(x);
+    var xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
     var yAxis = d3.axisLeft(y).tickFormat(timeFormat);
 
     var svg = d3.select('.scatterplotGraph')
