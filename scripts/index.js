@@ -2,7 +2,7 @@ $(document).ready(function(){
     var url = 'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json';
     var margin = {top: 100, bottom: 30, left: 60, right: 20},
         width = 920 - margin.left - margin.right,
-        height = 630 - margin.top - margin.bottom;
+        height = 600 - margin.top - margin.bottom;
 
     var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleTime().range([0, height]);
@@ -11,6 +11,12 @@ $(document).ready(function(){
     var timeFormat = d3.timeFormat('%M:%S');
     var xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
     var yAxis = d3.axisLeft(y).tickFormat(timeFormat);
+
+    var tooltip = d3.select('.scatterplotGraph')
+                    .append('div')
+                    .attr('class', 'tooltip')
+                    .attr('id', 'tooltip')
+                    .style('opacity', 0);
 
     var svg = d3.select('.scatterplotGraph')
                 .append('svg')
@@ -52,6 +58,22 @@ $(document).ready(function(){
             .attr('id', 'y-axis')
             .call(yAxis);
 
+        var mouseover = function (d) {
+            tooltip.style('opacity', .9);
+            tooltip.attr('data-year', d.Year);
+
+            var tooltipText = d.Name + ': ' + d.Nationality + '<br/>'
+                                + 'Year: ' + d.Year + ', Time: ' + timeFormat(d.Time)
+                                + (d.Doping ? '<br/><br/>' + d.Doping : '');
+            tooltip.html(tooltipText)
+                    .style('left', (d3.event.pageX + 15) + 'px')
+                    .style('top', (d3.event.pageY - 28) + 'px');
+        }
+
+        var mouseout = function (d) {
+            tooltip.style('opacity', 0);
+        }
+
         // Dots
         svg.selectAll('.dot')
             .data(data)
@@ -62,7 +84,9 @@ $(document).ready(function(){
             .attr('r', 5)
             .attr('data-xvalue', element => element.Year)
             .attr('data-yvalue', element => element.Time.toISOString)
-            .style('fill', element => color(element.Doping != ''));
+            .style('fill', element => color(element.Doping != ''))
+            .on('mouseover', mouseover)
+            .on('mouseout', mouseout);
 
         // Legend
         var legend = svg.selectAll('.legend')

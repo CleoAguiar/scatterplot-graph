@@ -5,5 +5,13 @@
 }
 
 svg {
-    border: solid red 1px;
+    margin: auto 10%;
+}
+
+div.tooltip {
+    position: absolute;
+    background-color: rgb(167, 219, 240);
+    padding: 10px;
+    font: 12px sans-serif;
+    border-radius: 8px;
 }
